@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>gyy的毕业设计</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+    <!--<link href="css/jPicker-1.1.6.css" rel="stylesheet">-->
+    <!--<link href="jPicker.css" rel="stylesheet">-->
+    <style>
+        html,body{height: 100%;background-color: #eeeeee;overflow: hidden;}
+        .row-fluid{height: 100%;}
+        .container{width: 98%;height: 100%;}
+        .menuBar{}
+        .toolBar {overflow: auto;height: 85%;}
+        .canvasBox{overflow: auto;height:85%;padding: 0;}
+        .statusBar{left:auto;right:auto;width: 90%;height: 30px;}
+        input[type="file"]{opacity: 0;position: absolute;left: 0;top: 0;height: 25px;}
+        input[type="color"]{width: 60px;}
+        .close{font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;}
+        canvas{position: absolute;}
+        .newFileTable {margin: 30px 0 0 0;width: 100%;}
+        .modal-body{text-align: left;}
+        .modal-body table tr{vertical-align: top;}
+        tbody {display: table-row-group;vertical-align: middle;border-color: inherit;}
+        .newFileTable .labelTD {width: 33%;text-align: right;line-height: 24px;}
+        .modal-body table td {text-align: left;font-weight: normal;font-size: 14px;}
+        .newFileTable tr {height: 30px;}
+        .newFileTable .formTD {text-align: left;padding-left: 15px;vertical-align: middle;}
+
+        .newFileTable .formTD select {width: 110px;height: 23px;padding: 0;}
+        .newCanvasModalEntry {width: 120px;height: 30px;background-color: white;position: relative;}
+        .newFileTable .formTD .newFileTextEntry {background-color: #fff;width: 90px;height: 21px;padding: 0;}
+        .newCanvasEntryLabel {font-size: 11px;color: #707F75;margin: 2px 10px 0 10px;position: absolute;top: 0;right: 0;}
+        .maxSizePrint {margin-top: 10px;font-size: 10px;color: #80988A;margin-left: 17%;}
+        .statusBar .lineWidth{margin-bottom: 10px;}
+        #colorBox{display: inline-block;}
+        input[type="range"]{width:142px;}
+        .control{text-align: right;}
+        #lineWidth input[type="number"]{width: 60px;}
+
+        .newCanvasModalEntry input[type=number]::-webkit-inner-spin-button,
+        .newCanvasModalEntry input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <![endif]-->
+
+    <!-- Le fav and touch icons -->
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="btn-toolbar menuBar">
+        <div class="btn-group dropdown">
+            <button class="btn">文件</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a href="#">打开图片<input type="file" name="file" id="file" size="20"/></a></li>
+                <li><a data-toggle="modal" href="#chooseCanvas"  data-keyboard="true" data-backdrop="static">新建图层</a></li>
+                <li><a href="#">退出</a></li>
+                <li class="divider"></li>
+                <li><a href="#">保存</a></li>
+            </ul>
+        </div><!-- /btn-group -->
+        <div class="btn-group dropdown">
+            <button class="btn">编辑</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a href="#">撤消</a></li>
+                <li><a href="#">恢复</a></li>
+                <li><a href="#">复制</a></li>
+                <li><a href="#">剪切</a></li>
+                <li><a href="#">粘贴</a></li>
+                <li><a href="#">选择</a></li>
+            </ul>
+        </div><!-- /btn-group -->
+
+        <div class="btn-group dropdown filter">
+            <button class="btn filterName">滤镜</button>
+            <button class="btn dropdown-toggle disabled" data-toggle="dropdown"><span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a href="#" id="opposition">底片效果</a></li>
+                <li><a href="#" id="greyScale">黑白效果</a></li>
+                <li><a href="#" id="binarization">二值化</a></li>
+                <li><a href="#" id="gaussianBlur">高斯模糊</a></li>
+                <li><a href="#" id="sketch">素描效果</a></li>
+                <li><a href="#" id="sharp">锐化</a></li>
+                <li><a href="#" id="sobel">Sobel</a></li>
+                <li><a href="#" id="virus">virus</a></li>
+            </ul>
+        </div><!-- /btn-group -->
+
+        <div class="btn-group"><button class="btn disabled" href="#" id="original">原图</button></div>
+    </div><!-- /btn-toolbar -->
+    <div class="row-fluid clearfix">
+        <div class="span2 toolBar well">
+            <div class="control">
+                亮度<input type="range" min="-1" max="1" step="0.01" class="brightness" disabled=true/>
+                对比度<input type="range" min="-1" max="1" step="0.01" class="contrast" disabled=true />
+                <button class="btn bc">确定</button>
+                <!--饱和度<input type="range" min="-1" max="1" step="0.01" class="saturation" disabled=true />-->
+            </div>
+            <button class="btn paint">涂鸦</button>
+        </div>
+        <div class="span10 canvasBox well">
+            <canvas id="photo"></canvas>
+        </div>
+    </div>
+    <div class="navbar-fixed-bottom statusBar">
+        <div id="colorBox" class="pull-left"><input type="color"></div>
+        <div id="lineWidth" class="pull-left"><input type="number" placeholder="1" min="1"></div>
+    </div>
+</div> <!-- /container -->
+<div class="modal fade hide in alert-error" id="alertError">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>FAIL!</h3>
+    </div>
+    <div class="modal-body"></div>
+</div>
+<div id="chooseCanvas" class="modal hide fade in">
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal">×</a>
+        <h3>New File</h3>
+    </div>
+    <div class="modal-body">
+        <table class="newFileTable">
+            <tbody><tr>
+                <td class="labelTD">Preset sizes</td>
+                <td class="formTD">
+                    <select class="customSizeSelect">
+                        <option rel="0" selected="true" value="989x445">Custom</option>
+                        <option rel="500" value="500x400">500×400</option>
+                        <option rel="500" value="500x500">500×500</option>
+                        <option rel="667" value="667x500">667×500</option>
+                        <option rel="800" value="800x800">800×800</option>
+                        <option rel="1000" value="1000x800">1000×800</option>
+                        <option rel="1024" value="1024x768">1024×768</option>
+                        <option rel="1280" value="1280x800">1280×800</option>
+                        <option rel="1600" value="1600x900" style="display: none;">1600×900</option>
+                        <option rel="1600" value="1600x1600" style="display: none;">1600×1600</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="labelTD">Width</td>
+                <td class="formTD">
+                    <div class="newCanvasModalEntry">
+                        <input type="number" class="widthEntry newFileTextEntry" maxlength="5" max="2000" placeholder="989">
+                        <div class="newCanvasEntryLabel">PX</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="labelTD">Height</td>
+                <td class="formTD">
+                    <div class="newCanvasModalEntry">
+                        <input type="text" class="heightEntry newFileTextEntry" maxlength="5" max="2000" placeholder="445">
+                        <div class="newCanvasEntryLabel">PX</div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="labelTD">Background</td>
+                <td class="formTD">
+                    <select class="customBGSelect">
+                        <option selected="true" value="white">White</option>
+                        <!--<option value="black">Black</option>-->
+                        <!--<option value="transparent">Transparent</option>-->
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="maxSizePrint">Maximum canvas size: 2000×2000px</div>
+                </td>
+            </tr>
+            </tbody></table>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">取消</a>
+        <a href="#" class="btn btn-primary" data-dismiss="modal" id="creatCanvas">确定</a>
+    </div>
+</div>
+<div id="">
+</div>
+<!-- Le javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="js/jquery.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="js/plugins/pixastic.custom.js"></script>
+<script src="js/gyyUsePixastic.js"></script>
+<script>
+    $(function(){
+        var size=String($('.customSizeSelect').val()).split('x');
+        console.log(size);
+        $('.widthEntry').val(size[0]);
+        $('.heightEntry').val(size[1]);
+        $('.customSizeSelect').change(function(){
+            size=String($('.customSizeSelect').val()).split('x');
+            $('.widthEntry').val(size[0]);
+            $('.heightEntry').val(size[1]);
+        });
+    });
+</script>
+</body>
+</html>
